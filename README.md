@@ -2,10 +2,13 @@
 
 ## References 
 - https://www.spectric.com/post/multicast-within-kubernetes
+- [Deterministic cni-bin-dir](https://github.com/k3s-io/k3s/issues/1434)
   
 ## Deploy multus to K3s
 
 The first step is to deploy multus to k3s, so we will need to inspect the correct paths for cni & cnibin
+
+
 
 ```bash
 journalctl -u k3s|grep cni-conf-dir
