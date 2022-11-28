@@ -1,5 +1,8 @@
 # Configure multicast on K3s 
 
+## References 
+- https://www.spectric.com/post/multicast-within-kubernetes
+  
 ## Deploy multus to K3s
 
 The first step is to deploy multus to k3s, so we will need to inspect the correct paths for cni & cnibin
@@ -15,7 +18,7 @@ Sep 29 16:05:44 tst-st-srv1 k3s[28281]: Flag --cni-conf-dir has been deprecated,
 
 So we need to change those two parameters on multus daemonset.
 
-To do this I will patch https://raw.githubusercontent.com/k8snetworkplumbingwg/multus-cni/master/deployments/multus-daemonset.yml using kustomize.
+To do this I will patch https://raw.githubusercontent.com/k8snetworkplumbingwg/multus-cni/master/deployments/multus-daemonset.yml using [kustomization](kustomization.yaml).
 
 ```yaml
 - target:
@@ -34,3 +37,26 @@ To do this I will patch https://raw.githubusercontent.com/k8snetworkplumbingwg/m
       path: /spec/template/spec/volumes/1/hostPath/path
       value: "/var/lib/rancher/k3s/data/9de9bfcf367b723ef0ac73dd91761165a4a8ad11ad16a758d3a996264e60c612/bin"
 ```
+
+## Configure a macvlan
+
+```yaml
+apiVersion: "k8s.cni.cncf.io/v1" 
+kind: NetworkAttachmentDefinition 
+metadata: 
+  name: eth1-multicast 
+spec: 
+  config: '{ 
+      "cniVersion": "0.3.0", 
+      "type": "macvlan", 
+      "master": "eth1", 
+      "mode": "bridge", 
+      "ipam": { 
+        "type": "host-local", 
+        "subnet": "10.0.0.0/24", 
+        "rangeStart": "10.0.0.13", 
+        "rangeEnd": "10.0.0.254" 
+      } 
+    }' 
+```
+Config: { "cniVersion": "0.3.1", "plugins": [ {"name": "oampub", "type": "macvlan", "master": "vlan.1010", "ipam": { "type": "static", "routes": [ { "dst": "10.108.180.100/32", "gw": "10.112.136.209" }, { "dst": "10.108.180.101/32", "gw": "10.112.136.209" }, { "dst": "10.108.180.164/32", "gw": "10.112.136.209" } ] } }, { "type": "sbr" } ] }
