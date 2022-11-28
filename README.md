@@ -15,7 +15,7 @@ Sep 29 16:05:44 tst-st-srv1 k3s[28281]: Flag --cni-conf-dir has been deprecated,
 
 So we need to change those two parameters on multus daemonset.
 
-To this we will patch https://raw.githubusercontent.com/k8snetworkplumbingwg/multus-cni/master/deployments/multus-daemonset.yml using kustomize.
+To do this I will patch https://raw.githubusercontent.com/k8snetworkplumbingwg/multus-cni/master/deployments/multus-daemonset.yml using kustomize.
 
 ```yaml
 - target:
